@@ -1,0 +1,2453 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FT Corporation</title>
+    <meta
+      name="description"
+      content="FT Corporation  Free Fire Panel Provider. Premium key redemption and SID management."
+    />
+    <meta
+      name="keywords"
+      content="FT Corporation , Free Fire panel, premium key, redeem, SID, Firebase auth"
+    />
+    <meta name="author" content="FT Corporation DEW" />
+
+    <!-- Google Font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <!-- Particles.js -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap");
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --primary: #2e5937;
+        --primary-dark: #1f3d26;
+        --primary-light: #3d7047;
+        --primary-glow: rgba(
+          46,
+          89,
+          55 /* ABNORMAL RE CHANGE ;FT CORPORATION */,
+          0.5
+        );
+        --background: #0a0e17;
+        --card-bg: rgba(10, 14, 23, 0.7);
+        --text: #f0f0f0;
+        --text-muted: #94a3b8;
+        --border: rgba(
+          46,
+          89,
+          55 /* ABNORMAL RE CHANGE ;FT CORPORATION */,
+          0.3
+        );
+        --box-shadow: 0 0 15px
+          rgba(46, 89, 55 /* ABNORMAL RE CHANGE ;FT CORPORATION */, 0.2);
+        --danger: #ff3e5b;
+        --success: #00cc66;
+        --warning: #ffcc00;
+        --neutral-100: #f8fafc;
+        --neutral-200: #e2e8f0;
+        --neutral-300: #cbd5e1;
+        --neutral-400: #94a3b8;
+        --neutral-500: #64748b;
+        --neutral-600: #475569;
+        --neutral-700: #334155;
+        --neutral-800: #1e293b;
+        --neutral-900: #0f172a;
+      }
+
+      body {
+        font-family: "Rajdhani", sans-serif;
+        background: var(--background);
+        color: var(--text);
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        position: relative;
+        overflow-x: hidden;
+        line-height: 1.5;
+      }
+
+      #particles-js {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: 0;
+      }
+
+      /* Enhanced Cyber Grid Background */
+      .cyber-grid {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-size: 50px 50px;
+        background-image: linear-gradient(
+            to right,
+            rgba(46, 89, 55 /* ABNORMAL RE CHANGE ;FT CORPORATION */, 0.05) 1px,
+            transparent 1px
+          ),
+          linear-gradient(
+            to bottom,
+            rgba(46, 89, 55 /* ABNORMAL RE CHANGE ;FT CORPORATION */, 0.05) 1px,
+            transparent 1px
+          );
+        z-index: -1;
+        transform: perspective(500px) rotateX(60deg);
+        transform-origin: top;
+        opacity: 0.4;
+        animation: gridPulse 8s infinite alternate;
+      }
+
+      @keyframes gridPulse {
+        0% {
+          opacity: 0.3;
+          background-size: 50px 50px;
+        }
+        50% {
+          opacity: 0.5;
+          background-size: 55px 55px;
+        }
+        100% {
+          opacity: 0.3;
+          background-size: 50px 50px;
+        }
+      }
+
+      /* Floating Hexagons */
+      .floating-hex {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: -1;
+        overflow: hidden;
+      }
+
+      /* Falling particles animation for auth card */
+      .falling-particles {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 0;
+        overflow: visible;
+        z-index: 1;
+      }
+
+      .particle {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: var(--primary);
+        border-radius: 50%;
+        opacity: 0;
+        animation: fallDown 3s linear infinite;
+      }
+
+      @keyframes fallDown {
+        0% {
+          transform: translateY(-20px);
+          opacity: 0;
+        }
+        10% {
+          opacity: 0.8;
+        }
+        90% {
+          opacity: 0.8;
+        }
+        100% {
+          transform: translateY(400px);
+          opacity: 0;
+        }
+      }
+
+      .hex {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        background: transparent;
+        border: 1px solid var(--primary);
+        opacity: 0.2;
+        clip-path: polygon(
+          50% 0%,
+          100% 25%,
+          100% 75%,
+          50% 100%,
+          0% 75%,
+          0% 25%
+        );
+        animation: floatHex 15s linear infinite;
+      }
+
+      @keyframes floatHex {
+        0% {
+          transform: translateY(100vh) rotate(0deg);
+          opacity: 0;
+        }
+        10% {
+          opacity: 0.2;
+        }
+        90% {
+          opacity: 0.2;
+        }
+        100% {
+          transform: translateY(-100px) rotate(360deg);
+          opacity: 0;
+        }
+      }
+
+      header {
+        background: linear-gradient(
+          135deg,
+          rgba(10, 14, 23, 0.9),
+          rgba(20, 28, 46, 0.8)
+        );
+        position: relative;
+        width: 100%;
+        padding: 2.5em;
+        text-align: center;
+        z-index: 1;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        border-bottom: 2px solid var(--primary);
+        overflow: hidden;
+        animation: headerGlow 5s infinite alternate;
+      }
+
+      @keyframes headerGlow {
+        0% {
+          box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        100% {
+          box-shadow: 0 5px 25px rgba(0, 255, 0, 0.2);
+        }
+      }
+
+      /* Enhanced Header Highlight Effect */
+      header::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(
+          to right,
+          transparent,
+          var(--primary),
+          transparent
+        );
+        animation: headerHighlight 6s infinite;
+      }
+
+      @keyframes headerHighlight {
+        0% {
+          left: -100%;
+        }
+        50% {
+          left: 100%;
+        }
+        100% {
+          left: -100%;
+        }
+      }
+
+      header::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(
+          to right,
+          transparent,
+          var(--primary),
+          transparent
+        );
+      }
+
+      header h1 {
+        font-family: "Orbitron", sans-serif;
+        font-size: 3.5em;
+        margin-bottom: 0.3em;
+        color: var(--primary);
+        text-transform: uppercase;
+        letter-spacing: 4px;
+        font-weight: 800;
+        text-shadow: 0 0 10px var(--primary-glow), 0 0 20px rgba(0, 255, 0, 0.3),
+          0 0 40px rgba(0, 255, 0, 0.2);
+        animation: pulsateText 3s infinite alternate, glitchText 10s infinite;
+        position: relative;
+      }
+
+      /* Enhanced Pulsating Text Effect */
+      @keyframes pulsateText {
+        0% {
+          text-shadow: 0 0 10px var(--primary-glow),
+            0 0 20px rgba(0, 255, 0, 0.3);
+        }
+        50% {
+          text-shadow: 0 0 15px var(--primary-glow),
+            0 0 25px var(--primary-glow), 0 0 40px rgba(0, 255, 0, 0.5);
+        }
+        100% {
+          text-shadow: 0 0 20px var(--primary-glow),
+            0 0 30px var(--primary-glow), 0 0 50px rgba(0, 255, 0, 0.6);
+        }
+      }
+
+      /* Enhanced Glitch Text Effect */
+      @keyframes glitchText {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        94% {
+          transform: translateX(0);
+        }
+        94.5% {
+          transform: translateX(-2px);
+        }
+        95% {
+          transform: translateX(2px);
+        }
+        95.5% {
+          transform: translateX(0);
+        }
+        96% {
+          transform: translateX(-2px);
+        }
+        96.5% {
+          transform: translateX(0);
+        }
+        97% {
+          transform: translateX(2px);
+        }
+        97.5% {
+          transform: translateX(-2px);
+        }
+        98% {
+          transform: translateX(0);
+        }
+      }
+
+      /* Rotating Hex Border around header */
+      .hex-border {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border: 2px solid transparent;
+        border-image: linear-gradient(
+            45deg,
+            var(--primary),
+            transparent,
+            var(--primary),
+            transparent,
+            var(--primary)
+          )
+          1;
+        animation: rotateBorder 15s linear infinite;
+        pointer-events: none;
+        opacity: 0.5;
+      }
+
+      @keyframes rotateBorder {
+        0% {
+          border-image: linear-gradient(
+              0deg,
+              var(--primary),
+              transparent,
+              var(--primary),
+              transparent,
+              var(--primary)
+            )
+            1;
+        }
+        100% {
+          border-image: linear-gradient(
+              360deg,
+              var(--primary),
+              transparent,
+              var(--primary),
+              transparent,
+              var(--primary)
+            )
+            1;
+        }
+      }
+
+      header p {
+        font-size: 1.2em;
+        color: var(--text);
+        margin-bottom: 0.6em;
+        font-weight: 500;
+      }
+
+      header p.founder {
+        font-size: 1.3em;
+        color: var(--text);
+        margin-bottom: 0.6em;
+        letter-spacing: 1px;
+        position: relative;
+        display: inline-block;
+        animation: fadeInUp 1s ease-out;
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      header p.founder::after {
+        content: "";
+        position: absolute;
+        bottom: -5px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 40%;
+        height: 2px;
+        background: linear-gradient(
+          to right,
+          transparent,
+          var(--primary),
+          var(--primary),
+          transparent
+        );
+        animation: expandWidth 3s infinite alternate;
+      }
+
+      @keyframes expandWidth {
+        from {
+          width: 30%;
+        }
+        to {
+          width: 60%;
+        }
+      }
+
+      header p a {
+        color: var(--primary);
+        text-decoration: none;
+        position: relative;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        padding: 0 5px;
+      }
+
+      header p a::before {
+        content: "";
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: var(--primary);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+        transform-origin: right;
+      }
+
+      header p a:hover {
+        color: var(--primary);
+        text-shadow: 0 0 8px rgba(0, 255, 0, 0.5);
+      }
+
+      header p a:hover::before {
+        transform: scaleX(1);
+        transform-origin: left;
+      }
+
+      .container {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 2em;
+        z-index: 1;
+        position: relative;
+        min-height: 65vh;
+      }
+
+      .card {
+        background: linear-gradient(
+          135deg,
+          rgba(15, 23, 42, 0.8),
+          rgba(30, 41, 59, 0.6)
+        );
+        backdrop-filter: blur(10px);
+        padding: 2em;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        width: 100%;
+        max-width: 450px;
+        text-align: center;
+        box-shadow: var(--box-shadow), 0 10px 30px rgba(0, 0, 0, 0.2);
+        animation: fadeIn 0.8s ease-out, floatCard 6s ease-in-out infinite;
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* Enhanced Floating Card Animation */
+      @keyframes floatCard {
+        0% {
+          transform: translateY(0);
+          box-shadow: var(--box-shadow), 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        50% {
+          transform: translateY(-15px);
+          box-shadow: var(--box-shadow), 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        100% {
+          transform: translateY(0);
+          box-shadow: var(--box-shadow), 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+      }
+
+      /* Card Border Glow Effect - Neutral with animation */
+      .card::before {
+        content: "";
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.1);
+        z-index: -1;
+        opacity: 0.6;
+        filter: blur(4px);
+      }
+
+      /* Card Corner Accent */
+      .card::after {
+        content: "";
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        top: 0;
+        right: 0;
+        border-top: 2px solid var(--primary);
+        border-right: 2px solid var(--primary);
+        opacity: 0.5;
+        animation: cornerPulse 4s infinite alternate;
+      }
+
+      @keyframes cornerPulse {
+        from {
+          opacity: 0.3;
+          width: 30px;
+          height: 30px;
+        }
+        to {
+          opacity: 0.7;
+          width: 50px;
+          height: 50px;
+        }
+      }
+
+      .card-corner {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        bottom: 0;
+        left: 0;
+        border-bottom: 2px solid var(--primary);
+        border-left: 2px solid var(--primary);
+        opacity: 0.5;
+        animation: cornerPulse 4s infinite alternate-reverse;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .card-header {
+        margin-bottom: 2em;
+        position: relative;
+      }
+
+      .card-title {
+        font-family: "Orbitron", sans-serif;
+        font-size: 2em;
+        color: var(--primary);
+        margin-bottom: 0.5em;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        position: relative;
+        display: inline-block;
+        animation: titleGlow 3s infinite alternate;
+      }
+
+      @keyframes titleGlow {
+        0% {
+          text-shadow: 0 0 5px var(--primary-glow);
+        }
+        100% {
+          text-shadow: 0 0 15px var(--primary-glow),
+            0 0 30px rgba(0, 255, 0, 0.3);
+        }
+      }
+
+      .card-title::after {
+        content: "";
+        position: absolute;
+        bottom: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 50%;
+        height: 2px;
+        background: linear-gradient(
+          to right,
+          transparent,
+          var(--primary),
+          var(--primary),
+          transparent
+        );
+        animation: lineWidth 3s infinite alternate;
+      }
+
+      @keyframes lineWidth {
+        from {
+          width: 30%;
+        }
+        to {
+          width: 70%;
+        }
+      }
+
+      /* Enhanced Cyberpunk Dots Animation */
+      .cyber-dots {
+        position: absolute;
+        top: -15px;
+        right: -15px;
+        width: 70px;
+        height: 70px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        transform: rotate(45deg);
+        animation: rotateDots 20s linear infinite;
+      }
+
+      @keyframes rotateDots {
+        from {
+          transform: rotate(45deg);
+        }
+        to {
+          transform: rotate(405deg);
+        }
+      }
+
+      .cyber-dot {
+        width: 3px;
+        height: 3px;
+        background-color: var(--primary);
+        margin: 3px;
+        opacity: 0;
+        animation: cyberdot 2s infinite;
+      }
+
+      @keyframes cyberdot {
+        0% {
+          opacity: 0;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1.5);
+        }
+        100% {
+          opacity: 0;
+          transform: scale(1);
+        }
+      }
+
+      .cyber-dots .cyber-dot:nth-child(1) {
+        animation-delay: 0.1s;
+      }
+      .cyber-dots .cyber-dot:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .cyber-dots .cyber-dot:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+      .cyber-dots .cyber-dot:nth-child(4) {
+        animation-delay: 0.4s;
+      }
+      .cyber-dots .cyber-dot:nth-child(5) {
+        animation-delay: 0.5s;
+      }
+      .cyber-dots .cyber-dot:nth-child(6) {
+        animation-delay: 0.6s;
+      }
+      .cyber-dots .cyber-dot:nth-child(7) {
+        animation-delay: 0.7s;
+      }
+      .cyber-dots .cyber-dot:nth-child(8) {
+        animation-delay: 0.8s;
+      }
+      .cyber-dots .cyber-dot:nth-child(9) {
+        animation-delay: 0.9s;
+      }
+
+      .card-description {
+        color: var(--text-muted);
+        font-size: 1.1em;
+        font-weight: 500;
+        animation: fadeInUp 1s ease-out 0.3s both;
+      }
+
+      .tabs {
+        display: flex;
+        margin-bottom: 1.5em;
+        background: rgba(15, 23, 42, 0.7);
+        border-radius: 8px;
+        overflow: hidden;
+        position: relative;
+        border: 1px solid
+          rgba(46, 89, 55 /* ABNORMAL RE CHANGE ;FT CORPORATION */, 0.1);
+        animation: fadeInUp 1s ease-out 0.5s both;
+      }
+
+      .tab {
+        flex: 1;
+        padding: 1em;
+        cursor: pointer;
+        background: transparent;
+        border: none;
+        color: var(--text);
+        font-weight: 600;
+        font-family: "Rajdhani", sans-serif;
+        font-size: 1.05em;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+
+      .tab::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          to bottom,
+          var(--primary-glow),
+          transparent
+        );
+        opacity: 0;
+        transition: opacity 0.3s;
+        z-index: -1;
+      }
+
+      .tab:hover::before {
+        opacity: 0.1;
+      }
+
+      .tab.active {
+        color: var(--primary);
+        text-shadow: 0 0 10px var(--primary-glow);
+        background: linear-gradient(
+          to bottom,
+          rgba(0, 255, 0, 0.15),
+          rgba(46, 89, 55 /* ABNORMAL RE CHANGE ;FT CORPORATION */, 0.05)
+        );
+      }
+
+      .tab.active::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: var(--primary);
+        animation: tabHighlight 0.5s forwards;
+      }
+
+      @keyframes tabHighlight {
+        from {
+          transform: scaleX(0);
+        }
+        to {
+          transform: scaleX(1);
+        }
+      }
+
+      .tab:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        color: var(--text-muted);
+      }
+
+      .tab-content {
+        display: none;
+        animation: fadeSlideIn 0.5s ease-out;
+      }
+
+      @keyframes fadeSlideIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      .form-group {
+        margin-bottom: 1.2em;
+        position: relative;
+        animation: fadeInUp 0.5s ease-out both;
+      }
+
+      .form-group:nth-child(1) {
+        animation-delay: 0.1s;
+      }
+      .form-group:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .form-group:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+
+      input {
+        width: 100%;
+        padding: 1em 1em 1em 2.5em;
+        border-radius: 8px;
+        border: 1px solid
+          rgba(46, 89, 55 /* ABNORMAL RE CHANGE ;FT CORPORATION */, 0.2);
+        background: rgba(15, 23, 42, 0.4);
+        color: var(--text);
+        font-size: 1em;
+        font-family: "Rajdhani", sans-serif;
+        font-weight: 500;
+        transition: all 0.3s;
+        letter-spacing: 0.5px;
+      }
+
+      input:focus {
+        outline: none;
+        border-color: var(--primary);
+        background: rgba(
+          46,
+          89,
+          55 /* ABNORMAL RE CHANGE ;FT CORPORATION */,
+          0.05
+        );
+        box-shadow: 0 0 0 2px rgba(0, 255, 0, 0.1),
+          0 0 15px rgba(0, 255, 0, 0.2);
+      }
+
+      .form-icon {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--primary);
+        font-size: 1em;
+        pointer-events: none;
+        animation: iconPulse 2s infinite alternate;
+      }
+
+      @keyframes iconPulse {
+        from {
+          text-shadow: 0 0 0 transparent;
+        }
+        to {
+          text-shadow: 0 0 10px var(--primary-glow);
+        }
+      }
+
+      .btn {
+        width: 100%;
+        padding: 1em;
+        border-radius: 8px;
+        border: none;
+        font-size: 1em;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        margin-bottom: 1.5em;
+        font-family: "Orbitron", sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        position: relative;
+        overflow: hidden;
+        animation: fadeInUp 0.5s ease-out 0.4s both;
+      }
+
+      .btn::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.2);
+        transition: all 0.5s;
+        transform: skewX(-15deg);
+      }
+
+      .btn:hover::before {
+        left: 100%;
+      }
+
+      .btn-primary {
+        background: linear-gradient(
+          135deg,
+          var(--primary-dark),
+          var(--primary)
+        );
+        color: #000;
+        box-shadow: 0 4px 10px rgba(0, 255, 0, 0.2),
+          0 0 0 1px rgba(0, 255, 0, 0.1);
+      }
+
+      .btn-primary:hover {
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--primary-dark)
+        );
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(0, 255, 0, 0.3),
+          0 0 0 1px rgba(0, 255, 0, 0.2), 0 0 30px rgba(0, 255, 0, 0.2);
+      }
+
+      .btn-primary:active {
+        transform: translateY(1px);
+        box-shadow: 0 2px 5px rgba(0, 255, 0, 0.1),
+          0 0 0 1px rgba(0, 255, 0, 0.1);
+      }
+
+      .btn-outline {
+        background: transparent;
+        border: 2px solid var(--primary);
+        color: var(--primary);
+        font-weight: 600;
+        text-shadow: 0 0 10px var(--primary-glow);
+      }
+
+      .btn-outline:hover {
+        background: rgba(0, 255, 0, 0.1);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(0, 255, 0, 0.1),
+          0 0 0 1px rgba(0, 255, 0, 0.1), 0 0 20px rgba(0, 255, 0, 0.2);
+      }
+
+      .btn-outline:active {
+        transform: translateY(1px);
+      }
+
+      .btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+      }
+
+      .btn .spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        margin-right: 8px;
+        border: 2px solid;
+        border-color: currentColor transparent currentColor transparent;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .info-box {
+        background: rgba(
+          46,
+          89,
+          55 /* ABNORMAL RE CHANGE ;FT CORPORATION */,
+          0.05
+        );
+        border: 1px solid
+          rgba(46, 89, 55 /* ABNORMAL RE CHANGE ;FT CORPORATION */, 0.2);
+        border-radius: 8px;
+        padding: 1.5em;
+        margin-bottom: 1.5em;
+        position: relative;
+        backdrop-filter: blur(5px);
+        overflow: hidden;
+        animation: fadeInUp 0.5s ease-out both;
+      }
+
+      .info-box::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(
+          to right,
+          transparent,
+          var(--primary),
+          var(--primary),
+          transparent
+        );
+        animation: gradientMove 3s infinite alternate;
+      }
+
+      @keyframes gradientMove {
+        from {
+          background-position: 0% 50%;
+        }
+        to {
+          background-position: 100% 50%;
+        }
+      }
+
+      .info-box-title {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1em;
+        color: var(--primary);
+        font-weight: 700;
+        font-size: 1.2em;
+        font-family: "Orbitron", sans-serif;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+
+      .info-box-title i {
+        margin-right: 0.6em;
+        font-size: 0.9em;
+        animation: iconRotate 4s linear infinite;
+      }
+
+      @keyframes iconRotate {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Enhanced Data Row Animation */
+      .data-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.8em;
+        padding: 0.5em 0;
+        border-bottom: 1px dashed rgba(0, 255, 0, 0.2);
+        animation: fadeIn 0.5s ease-out forwards;
+        opacity: 0;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .data-row:nth-child(1) {
+        animation-delay: 0.1s;
+      }
+      .data-row:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .data-row:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+
+      .data-row::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background: linear-gradient(
+          to right,
+          transparent,
+          var(--primary),
+          transparent
+        );
+        transform: scaleX(0);
+        transform-origin: left;
+        animation: rowHighlight 2s forwards;
+      }
+
+      @keyframes rowHighlight {
+        from {
+          transform: scaleX(0);
+        }
+        to {
+          transform: scaleX(1);
+        }
+      }
+
+      .data-label {
+        font-weight: 600;
+        color: var(--text);
+      }
+
+      .data-value {
+        color: var(--primary);
+        font-weight: 500;
+        text-shadow: 0 0 5px var(--primary-glow);
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        background: linear-gradient(135deg, var(--primary), var(--primary));
+        color: #000;
+        padding: 0.4em 1em;
+        border-radius: 9999px;
+        font-size: 0.85em;
+        font-weight: 700;
+        letter-spacing: 1px;
+        box-shadow: 0 2px 10px rgba(0, 255, 0, 0.3);
+        text-transform: uppercase;
+        animation: pulseBadge 2s infinite alternate;
+      }
+
+      @keyframes pulseBadge {
+        0% {
+          box-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+        }
+        50% {
+          box-shadow: 0 0 15px rgba(0, 255, 0, 0.8),
+            0 0 10px rgba(0, 255, 0, 0.5);
+        }
+        100% {
+          box-shadow: 0 0 20px rgba(0, 255, 0, 0.9),
+            0 0 15px rgba(0, 255, 0, 0.7);
+        }
+      }
+
+      .badge i {
+        margin-right: 0.5em;
+        font-size: 0.9em;
+        animation: iconPulse 1.5s infinite alternate;
+      }
+
+      .mono-text {
+        font-family: "Courier New", monospace;
+        background: rgba(0, 0, 0, 0.3);
+        padding: 0.3em 0.7em;
+        border-radius: 4px;
+        font-size: 0.9em;
+        border: 1px solid
+          rgba(46, 89, 55 /* ABNORMAL RE CHANGE ;FT CORPORATION */, 0.2);
+        animation: monoPulse 4s infinite alternate;
+      }
+
+      @keyframes monoPulse {
+        from {
+          border-color: rgba(0, 255, 0, 0.2);
+        }
+        to {
+          border-color: rgba(0, 255, 0, 0.6);
+        }
+      }
+
+      footer {
+        background: linear-gradient(
+          to right,
+          rgba(10, 14, 23, 0.9),
+          rgba(20, 28, 46, 0.8)
+        );
+        width: 100%;
+        padding: 1.5em;
+        text-align: center;
+        color: var(--text);
+        border-top: 2px solid var(--primary);
+        margin-top: auto;
+        box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.2);
+        position: relative;
+        z-index: 1;
+        overflow: hidden;
+      }
+
+      /* Enhanced Footer Accent Lines */
+      footer::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background: linear-gradient(
+          to right,
+          transparent,
+          var(--primary-glow),
+          var(--primary-glow),
+          transparent
+        );
+      }
+
+      footer::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: -100%;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(
+          to right,
+          transparent,
+          var(--primary),
+          var(--primary),
+          var(--primary),
+          transparent
+        );
+        animation: footerHighlight 6s infinite;
+      }
+
+      @keyframes footerHighlight {
+        0% {
+          left: -100%;
+        }
+        100% {
+          left: 100%;
+        }
+      }
+
+      footer .copyright {
+        font-family: "Rajdhani", sans-serif;
+        font-weight: 600;
+        letter-spacing: 1px;
+        animation: textPulse 3s infinite alternate;
+      }
+
+      @keyframes textPulse {
+        from {
+          opacity: 0.8;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .footer-hex {
+        display: inline-block;
+        margin: 0 10px;
+        color: var(--primary);
+        font-size: 0.8em;
+        animation: rotateSlow 6s linear infinite;
+        transform-origin: center;
+      }
+
+      @keyframes rotateSlow {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .toast-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+      }
+
+      .toast {
+        background: rgba(15, 23, 42, 0.9);
+        backdrop-filter: blur(10px);
+        color: var(--text);
+        border-left: 4px solid var(--primary);
+        padding: 1em 1.5em;
+        margin-top: 0.8em;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 255, 0, 0.2);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        animation: slideIn 0.3s ease-out;
+        max-width: 350px;
+        font-weight: 500;
+      }
+
+      .toast.error {
+        border-left-color: var(--danger);
+      }
+
+      .toast-close {
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        font-size: 1.3em;
+        padding: 0 0.5em;
+        transition: all 0.3s;
+      }
+
+      .toast-close:hover {
+        color: var(--text);
+        text-shadow: 0 0 5px var(--primary-glow);
+      }
+
+      @keyframes slideIn {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      /* Enhanced Hex Loading Animation */
+      .hex-loader {
+        width: 24px;
+        height: 24px;
+        display: inline-block;
+        position: relative;
+        animation: hexRotate 1.5s linear infinite;
+      }
+
+      .hex-loader::before {
+        content: "";
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+        position: absolute;
+        left: 0;
+        top: 0;
+        background-image: conic-gradient(
+          transparent 135deg,
+          var(--primary) 145deg,
+          transparent 155deg,
+          transparent 265deg,
+          var(--primary) 285deg
+        );
+        clip-path: polygon(
+          50% 0%,
+          100% 25%,
+          100% 75%,
+          50% 100%,
+          0% 75%,
+          0% 25%
+        );
+        filter: drop-shadow(0 0 8px var(--primary-glow));
+      }
+
+      @keyframes hexRotate {
+        0% {
+          transform: rotate(0);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Forgot Password Link Styling */
+      .forgot-password {
+        display: block;
+        text-align: right;
+        margin-top: -0.5em;
+        margin-bottom: 1.2em;
+        font-size: 0.9em;
+        color: var(--text-muted);
+        text-decoration: none;
+        transition: all 0.3s;
+        animation: fadeInUp 0.5s ease-out 0.3s both;
+      }
+
+      .forgot-password:hover {
+        color: var(--primary);
+        text-shadow: 0 0 5px var(--primary-glow);
+      }
+
+      /* Google Sign In Button Styles */
+      .divider {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        margin: 1.5em 0;
+      }
+
+      .divider::before,
+      .divider::after {
+        content: "";
+        flex: 1;
+        border-bottom: 1px solid rgba(0, 255, 0, 0.2);
+      }
+
+      .divider span {
+        padding: 0 10px;
+        color: var(--text-muted);
+        font-size: 0.9em;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      /* Updated Google button with green theme */
+      .btn-google {
+        background: var(--primary);
+        color: #ffffff;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        font-family: "Rajdhani", sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        transition: all 0.3s ease;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+      }
+
+      .btn-google:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(0, 255, 0, 0.3),
+          0 0 0 1px rgba(0, 255, 0, 0.1);
+      }
+
+      .btn-google:active {
+        transform: translateY(1px);
+        background: var(--primary-dark);
+      }
+
+      .btn-google i {
+        font-size: 1.2em;
+        color: #ffffff;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+      }
+
+      /* Responsive Styles */
+      @media (max-width: 768px) {
+        header h1 {
+          font-size: 2.5em;
+        }
+
+        .card {
+          padding: 1.5em;
+        }
+
+        .card-title {
+          font-size: 1.8em;
+        }
+      }
+
+      @media (max-width: 480px) {
+        header h1 {
+          font-size: 2em;
+        }
+
+        header p {
+          font-size: 1em;
+        }
+
+        .container {
+          padding: 1em;
+        }
+
+        .card {
+          padding: 1.2em;
+        }
+
+        .card-title {
+          font-size: 1.6em;
+        }
+
+        .tabs {
+          flex-direction: column;
+        }
+
+        .tab {
+          padding: 0.8em;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="cyber-grid"></div>
+    <div id="particles-js"></div>
+
+    <!-- Added floating hexagons -->
+    <div class="floating-hex" id="floating-hex"></div>
+
+    <header>
+      <div class="hex-border"></div>
+      <h1>
+        <span>FT</span>
+        <span>CORPORATION</span>
+      </h1>
+      <p class="founder">Founder &amp; CEO: FOYSAL AHMED</p>
+      <p>
+        Create an account, Redeem your key and Enjoy ! Don't have a Key ?
+        <a href="https://discord.gg/gFSgJf9n6d" target="_blank">Click here</a>
+      </p>
+    </header>
+
+    <div class="container">
+      <div class="card" id="main-card">
+        <!-- Falling particles animation -->
+        <div class="falling-particles" id="falling-particles"></div>
+        <!-- Cyber Decorations -->
+        <div class="cyber-dots">
+          <div class="cyber-dot"></div>
+          <div class="cyber-dot"></div>
+          <div class="cyber-dot"></div>
+          <div class="cyber-dot"></div>
+          <div class="cyber-dot"></div>
+          <div class="cyber-dot"></div>
+          <div class="cyber-dot"></div>
+          <div class="cyber-dot"></div>
+          <div class="cyber-dot"></div>
+        </div>
+        <div class="card-corner"></div>
+
+        <!-- Auth Card -->
+        <div id="auth-card">
+          <div class="card-header">
+            <h2 class="card-title">Authentication</h2>
+            <p class="card-description">Sign in or create a new account</p>
+          </div>
+
+          <div class="tabs">
+            <button class="tab active" data-tab="signin">Sign In</button>
+            <button class="tab" data-tab="signup">Sign Up</button>
+            <button class="tab" data-tab="forgot">Forgot</button>
+          </div>
+
+          <div class="tab-content active" id="signin-content">
+            <form id="signin-form">
+              <div class="form-group">
+                <i class="form-icon fas fa-user"></i>
+                <input
+                  type="email"
+                  id="signin-email"
+                  placeholder="Enter your email"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <i class="form-icon fas fa-lock"></i>
+                <input
+                  type="password"
+                  id="signin-password"
+                  placeholder="Enter your password"
+                  required
+                />
+              </div>
+              <a href="#" class="forgot-password" id="forgot-password-link"
+                >Forgot Password?</a
+              >
+              <button type="submit" class="btn btn-primary" id="signin-btn">
+                Sign In
+              </button>
+              <div class="divider">
+                <span>OR</span>
+              </div>
+              <button
+                type="button"
+                class="btn btn-google"
+                id="google-signin-btn"
+              >
+                <i class="fab fa-google"></i> Continue with Google
+              </button>
+            </form>
+          </div>
+
+          <div class="tab-content" id="signup-content">
+            <form id="signup-form">
+              <div class="form-group">
+                <i class="form-icon fas fa-envelope"></i>
+                <input
+                  type="email"
+                  id="signup-email"
+                  placeholder="Enter your email"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <i class="form-icon fas fa-shield-alt"></i>
+                <input
+                  type="password"
+                  id="signup-password"
+                  placeholder="Enter your password"
+                  required
+                />
+              </div>
+              <button type="submit" class="btn btn-primary" id="signup-btn">
+                Sign Up
+              </button>
+            </form>
+          </div>
+
+          <div class="tab-content" id="forgot-content">
+            <form id="forgot-form">
+              <div class="form-group">
+                <i class="form-icon fas fa-envelope"></i>
+                <input
+                  type="email"
+                  id="forgot-email"
+                  placeholder="Enter your email"
+                  required
+                />
+              </div>
+              <button type="submit" class="btn btn-primary" id="forgot-btn">
+                Reset Password
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- User Dashboard Card -->
+        <div id="user-card" style="display: none">
+          <div class="card-header">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+              "
+            >
+              <h2 class="card-title">Dashboard</h2>
+              <div id="premium-badge" style="display: none">
+                <span class="badge">
+                  <i class="fas fa-crown"></i>
+                  Premium
+                </span>
+              </div>
+            </div>
+            <p class="card-description">
+              Welcome, <span id="user-email"></span>
+            </p>
+          </div>
+
+          <div class="tabs">
+            <button class="tab active" data-tab="premium" id="premium-tab">
+              Premium Status
+            </button>
+            <button class="tab" data-tab="redeem" id="redeem-tab">
+              Redeem Key
+            </button>
+          </div>
+
+          <div class="tab-content active" id="premium-content">
+            <div class="info-box">
+              <div class="info-box-title">
+                <i class="fas fa-key"></i>
+                SID Information
+              </div>
+              <div class="data-row">
+                <span class="data-label">Key:</span>
+                <span class="data-value mono-text" id="redeemed-key"
+                  >Not Available</span
+                >
+              </div>
+              <div class="data-row">
+                <span class="data-label">Current SID:</span>
+                <span class="data-value mono-text" id="current-sid"
+                  >Not Set</span
+                >
+              </div>
+              <div class="data-row">
+                <span class="data-label" id="reset-time-label"
+                  >Last Reset:</span
+                >
+                <span class="data-value" id="reset-time">Not Available</span>
+              </div>
+            </div>
+
+            <div id="update-sid-section" style="display: none">
+              <form id="update-sid-form">
+                <div class="form-group">
+                  <i class="form-icon fas fa-sync-alt"></i>
+                  <input
+                    type="text"
+                    id="new-sid"
+                    placeholder="Enter new SID"
+                    required
+                  />
+                </div>
+                <button
+                  type="submit"
+                  class="btn btn-primary"
+                  id="update-sid-btn"
+                >
+                  Update SID
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <div class="tab-content" id="redeem-content">
+            <form id="redeem-form">
+              <div class="form-group">
+                <i class="form-icon fas fa-ticket-alt"></i>
+                <input
+                  type="text"
+                  id="redeem-key"
+                  placeholder="Enter your redeem key"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <i class="form-icon fas fa-fingerprint"></i>
+                <input
+                  type="text"
+                  id="redeem-sid"
+                  placeholder="Enter your SID"
+                  required
+                />
+              </div>
+              <button type="submit" class="btn btn-primary" id="redeem-btn">
+                Redeem Key
+              </button>
+              <button type="button" class="btn btn-outline" id="buy-key-btn">
+                Buy Premium Key
+              </button>
+            </form>
+          </div>
+
+          <button class="btn btn-outline" id="logout-btn">
+            <i class="fas fa-sign-out-alt"></i> Sign Out
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <span class="footer-hex"><i class="fas fa-hexagon"></i></span>
+      <span class="copyright"
+        >&copy; <span id="current-year"></span> FT CORPORATION - All Rights
+        Reserved</span
+      >
+      <span class="footer-hex"><i class="fas fa-hexagon"></i></span>
+    </footer>
+
+    <div class="toast-container" id="toast-container"></div>
+
+    <script>
+      // Initialize particles.js with enhanced settings
+      particlesJS("particles-js", {
+        particles: {
+          number: {
+            value: 150,
+            density: { enable: true, value_area: 800 },
+          },
+          color: {
+            value: "#00ff00", // Updated to green
+          },
+          shape: {
+            type: ["circle", "triangle", "polygon"],
+            polygon: { nb_sides: 6 },
+          },
+          opacity: {
+            value: 0.6,
+            random: true,
+            anim: { enable: true, speed: 1, opacity_min: 0.1, sync: false },
+          },
+          size: {
+            value: 3,
+            random: true,
+            anim: { enable: true, speed: 2, size_min: 0.1, sync: false },
+          },
+          line_linked: {
+            enable: true,
+            distance: 150,
+            color: "#00ff00", // Updated to green
+            opacity: 0.2,
+            width: 1,
+            shadow: { enable: true, blur: 5, color: "#00ff00" }, // Updated to green
+          },
+          move: {
+            enable: true,
+            speed: 2,
+            direction: "none",
+            random: true,
+            straight: false,
+            out_mode: "out",
+            bounce: false,
+            attract: { enable: true, rotateX: 600, rotateY: 1200 },
+          },
+        },
+        interactivity: {
+          detect_on: "canvas",
+          events: {
+            onhover: { enable: true, mode: "grab" },
+            onclick: { enable: true, mode: "push" },
+            resize: true,
+          },
+          modes: {
+            grab: {
+              distance: 180,
+              line_linked: { opacity: 0.8 },
+            },
+            push: { particles_nb: 6 },
+            remove: { particles_nb: 2 },
+          },
+        },
+        retina_detect: true,
+      });
+
+      // Create floating hexagons
+      function createFloatingHexagons() {
+        const container = document.getElementById("floating-hex");
+        const colors = ["#00ff00", "#00ff00", "#00ff00"];
+
+        for (let i = 0; i < 20; i++) {
+          const hex = document.createElement("div");
+          hex.className = "hex";
+
+          // Random position
+          hex.style.left = `${Math.random() * 100}%`;
+
+          // Random size
+          const size = 10 + Math.random() * 30;
+          hex.style.width = `${size}px`;
+          hex.style.height = `${size}px`;
+
+          // Random color
+          const colorIndex = Math.floor(Math.random() * colors.length);
+          hex.style.borderColor = colors[colorIndex];
+
+          // Random animation duration
+          const duration = 10 + Math.random() * 20;
+          hex.style.animationDuration = `${duration}s`;
+
+          // Random delay
+          hex.style.animationDelay = `${Math.random() * 10}s`;
+
+          container.appendChild(hex);
+        }
+      }
+
+      // Call the function to create hexagons
+      createFloatingHexagons();
+
+      // Set current year in footer
+      document.getElementById("current-year").textContent =
+        new Date().getFullYear();
+
+      // Add cyber dots dynamically
+      const cyberDots = document.querySelector(".cyber-dots");
+      for (let i = 0; i < 9; i++) {
+        const dot = document.createElement("div");
+        dot.className = "cyber-dot";
+        dot.style.animationDelay = `${Math.random() * 2}s`;
+        cyberDots.appendChild(dot);
+      }
+
+      // Firebase Initialization
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyCX-0rbC6bwPP_qSQeGOilKJuaj5US-U_4",
+        authDomain: "ft-ff-tournament.firebaseapp.com",
+        databaseURL: "https://ft-ff-tournament-default-rtdb.firebaseio.com",
+        projectId: "ft-ff-tournament",
+        storageBucket: "ft-ff-tournament.firebasestorage.app",
+        messagingSenderId: "189436560146",
+        appId: "1:189436560146:web:9aecb564dfc4d298ade9cb",
+      };
+      firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+      const db = firebase.firestore();
+      let currentSid = null;
+      let currentUser = null;
+      let redeemedKey = null;
+
+      // Enhanced Toast notification system with animations
+      function showToast(message, type = "success") {
+        const toastContainer = document.getElementById("toast-container");
+        const toast = document.createElement("div");
+        toast.className = `toast ${type === "error" ? "error" : ""}`;
+
+        const toastIcon = document.createElement("i");
+        toastIcon.className =
+          type === "error"
+            ? "fas fa-exclamation-circle"
+            : "fas fa-check-circle";
+        toastIcon.style.marginRight = "10px";
+        toastIcon.style.color = type === "error" ? "#ff3e5b" : "#00ff00";
+
+        const toastContent = document.createElement("div");
+        toastContent.textContent = message;
+
+        const closeBtn = document.createElement("button");
+        closeBtn.className = "toast-close";
+        closeBtn.innerHTML = "&times;";
+        closeBtn.onclick = () => {
+          toast.style.opacity = "0";
+          toast.style.transform = "translateX(100%)";
+          setTimeout(() => toast.remove(), 300);
+        };
+
+        toast.appendChild(toastIcon);
+        toast.appendChild(toastContent);
+        toast.appendChild(closeBtn);
+        toastContainer.appendChild(toast);
+
+        // Add a slight delay before showing the toast for a staggered effect
+        setTimeout(() => {
+          toast.style.animation = "slideIn 0.5s forwards";
+        }, 100);
+
+        setTimeout(() => {
+          toast.style.opacity = "0";
+          toast.style.transform = "translateX(100%)";
+          setTimeout(() => toast.remove(), 300);
+        }, 5000);
+      }
+
+      // Tab switching functionality with enhanced animations
+      document.querySelectorAll(".tab").forEach((tab) => {
+        tab.addEventListener("click", () => {
+          if (tab.disabled) return;
+
+          const tabName = tab.getAttribute("data-tab");
+
+          // Update active tab with animation
+          document.querySelectorAll(".tab").forEach((t) => {
+            t.classList.remove("active");
+            t.style.transition = "all 0.3s ease";
+          });
+
+          tab.classList.add("active");
+
+          // Show corresponding content with enhanced animation
+          document.querySelectorAll(".tab-content").forEach((content) => {
+            content.classList.remove("active");
+            content.style.display = "none";
+            content.style.animation = "";
+          });
+
+          const targetContent = document.getElementById(`${tabName}-content`);
+          targetContent.style.display = "block";
+
+          // Add slight delay before adding active class for animation
+          setTimeout(() => {
+            targetContent.classList.add("active");
+            targetContent.style.animation = "fadeSlideIn 0.5s ease-out";
+          }, 50);
+        });
+      });
+
+      // Enhanced Loading button states with animations
+      function setButtonLoading(button, isLoading, originalText) {
+        if (isLoading) {
+          button.disabled = true;
+          const spinner = document.createElement("span");
+          spinner.className = "spinner";
+          spinner.style.animation = "spin 0.8s linear infinite";
+
+          button.innerHTML = "";
+          button.appendChild(spinner);
+          button.appendChild(
+            document.createTextNode(
+              " " + (button.dataset.loadingText || "Processing...")
+            )
+          );
+        } else {
+          button.disabled = false;
+          button.innerHTML = originalText || button.dataset.originalText;
+          button.style.animation = "fadeIn 0.3s ease-out";
+        }
+      }
+
+      // Sign In
+      document
+        .getElementById("signin-form")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const email = document.getElementById("signin-email").value;
+          const password = document.getElementById("signin-password").value;
+          const signinBtn = document.getElementById("signin-btn");
+
+          if (!signinBtn.dataset.originalText) {
+            signinBtn.dataset.originalText = signinBtn.innerHTML;
+          }
+          signinBtn.dataset.loadingText = "Signing In...";
+
+          setButtonLoading(signinBtn, true);
+
+          try {
+            await auth.signInWithEmailAndPassword(email, password);
+            showToast("Signed in successfully!");
+          } catch (error) {
+            showToast(error.message, "error");
+          } finally {
+            setButtonLoading(signinBtn, false, signinBtn.dataset.originalText);
+          }
+        });
+
+      // Google Sign In
+      document
+        .getElementById("google-signin-btn")
+        .addEventListener("click", async () => {
+          const googleBtn = document.getElementById("google-signin-btn");
+
+          if (!googleBtn.dataset.originalText) {
+            googleBtn.dataset.originalText = googleBtn.innerHTML;
+          }
+          googleBtn.dataset.loadingText = "Signing in with Google...";
+
+          setButtonLoading(googleBtn, true);
+
+          try {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            await auth.signInWithPopup(provider);
+            showToast("Signed in with Google successfully!");
+          } catch (error) {
+            showToast(error.message, "error");
+          } finally {
+            setButtonLoading(googleBtn, false, googleBtn.dataset.originalText);
+          }
+        });
+
+      // Sign Up
+      document
+        .getElementById("signup-form")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const email = document.getElementById("signup-email").value;
+          const password = document.getElementById("signup-password").value;
+          const signupBtn = document.getElementById("signup-btn");
+
+          if (!signupBtn.dataset.originalText) {
+            signupBtn.dataset.originalText = signupBtn.innerHTML;
+          }
+          signupBtn.dataset.loadingText = "Signing Up...";
+
+          setButtonLoading(signupBtn, true);
+
+          try {
+            const userCredential = await auth.createUserWithEmailAndPassword(
+              email,
+              password
+            );
+            await userCredential.user.sendEmailVerification();
+            await auth.signOut();
+            showToast(
+              "Verification email sent. Please verify and then sign in."
+            );
+          } catch (error) {
+            showToast(error.message, "error");
+          } finally {
+            setButtonLoading(signupBtn, false, signupBtn.dataset.originalText);
+          }
+        });
+
+      // Forgot Password
+      document
+        .getElementById("forgot-form")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const email = document.getElementById("forgot-email").value;
+          const forgotBtn = document.getElementById("forgot-btn");
+
+          if (!forgotBtn.dataset.originalText) {
+            forgotBtn.dataset.originalText = forgotBtn.innerHTML;
+          }
+          forgotBtn.dataset.loadingText = "Sending Reset Link...";
+
+          setButtonLoading(forgotBtn, true);
+
+          try {
+            await auth.sendPasswordResetEmail(email);
+            showToast("Password reset email sent. Check your inbox.");
+
+            // Switch back to sign in tab after successful reset request
+            setTimeout(() => {
+              document.querySelector('.tab[data-tab="signin"]').click();
+            }, 2000);
+          } catch (error) {
+            showToast(error.message, "error");
+          } finally {
+            setButtonLoading(forgotBtn, false, forgotBtn.dataset.originalText);
+          }
+        });
+
+      // Forgot Password Link
+      document
+        .getElementById("forgot-password-link")
+        .addEventListener("click", (e) => {
+          e.preventDefault();
+          document.querySelector('.tab[data-tab="forgot"]').click();
+
+          // Copy email from signin form if available
+          const signinEmail = document.getElementById("signin-email").value;
+          if (signinEmail) {
+            document.getElementById("forgot-email").value = signinEmail;
+          }
+        });
+
+      // Logout
+      document
+        .getElementById("logout-btn")
+        .addEventListener("click", async () => {
+          const logoutBtn = document.getElementById("logout-btn");
+
+          if (!logoutBtn.dataset.originalText) {
+            logoutBtn.dataset.originalText = logoutBtn.innerHTML;
+          }
+          logoutBtn.dataset.loadingText = "Signing Out...";
+
+          setButtonLoading(logoutBtn, true);
+
+          try {
+            await auth.signOut();
+            showToast("Signed out successfully!");
+          } catch (error) {
+            showToast(error.message, "error");
+          } finally {
+            setButtonLoading(logoutBtn, false, logoutBtn.dataset.originalText);
+          }
+        });
+
+      // Update SID
+      document
+        .getElementById("update-sid-form")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const newSid = document.getElementById("new-sid").value;
+          const updateBtn = document.getElementById("update-sid-btn");
+
+          if (!currentSid) {
+            showToast("No existing SID found", "error");
+            return;
+          }
+
+          if (!updateBtn.dataset.originalText) {
+            updateBtn.dataset.originalText = updateBtn.innerHTML;
+          }
+          updateBtn.dataset.loadingText = "Updating...";
+
+          setButtonLoading(updateBtn, true);
+
+          try {
+            const url = `https://api2abnormalred.netlify.app/.netlify/functions/updatesid?old_sid=${encodeURIComponent(
+              currentSid
+            )}&new_sid=${encodeURIComponent(newSid)}`;
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if (!response.ok) {
+              throw new Error(data.error || "Unknown error");
+            }
+
+            showToast(data.message || "SID updated successfully");
+
+            if (currentUser) {
+              await checkPremiumStatus(currentUser);
+            }
+          } catch (error) {
+            showToast(error.message || "Failed to update SID", "error");
+          } finally {
+            setButtonLoading(updateBtn, false, updateBtn.dataset.originalText);
+          }
+        });
+
+      // Redeem Key - Fixed to properly handle fetch errors and show success toast
+      document
+        .getElementById("redeem-form")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const key = document.getElementById("redeem-key").value;
+          const sid = document.getElementById("redeem-sid").value;
+          const redeemBtn = document.getElementById("redeem-btn");
+
+          if (!currentUser?.email) {
+            showToast("You must be signed in to redeem a key", "error");
+            return;
+          }
+
+          if (!redeemBtn.dataset.originalText) {
+            redeemBtn.dataset.originalText = redeemBtn.innerHTML;
+          }
+          redeemBtn.dataset.loadingText = "Redeeming...";
+
+          setButtonLoading(redeemBtn, true);
+
+          try {
+            const url = `https://api2abnormalred.netlify.app/.netlify/functions/redeemkey?email=${encodeURIComponent(
+              currentUser.email
+            )}&redeem_key=${encodeURIComponent(key)}&sid=${encodeURIComponent(
+              sid
+            )}`;
+
+            // Add timeout to the fetch request to prevent hanging
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+
+            const response = await fetch(url, { signal: controller.signal });
+            clearTimeout(timeoutId);
+
+            // Check if response is ok before trying to parse JSON
+            if (!response.ok) {
+              const errorData = await response
+                .json()
+                .catch(() => ({ error: "Failed to parse error response" }));
+              throw new Error(
+                errorData.error ||
+                  `Request failed with status ${response.status}`
+              );
+            }
+
+            // Parse the JSON response
+            const data = await response.json().catch(() => {
+              throw new Error("Failed to parse response data");
+            });
+
+            // Show success message
+            showToast(data.message || "Key redeemed successfully");
+
+            // Update premium status
+            await checkPremiumStatus(currentUser);
+          } catch (error) {
+            // Handle specific error types
+            if (error.name === "AbortError") {
+              showToast("Request timed out. Please try again.", "error");
+            } else if (
+              error.name === "TypeError" &&
+              error.message.includes("fetch")
+            ) {
+              showToast(
+                "Network error. Please check your connection and try again.",
+                "error"
+              );
+            } else {
+              showToast(error.message || "Failed to redeem key", "error");
+            }
+          } finally {
+            setButtonLoading(redeemBtn, false, redeemBtn.dataset.originalText);
+          }
+        });
+
+      // Buy Premium Key
+      document.getElementById("buy-key-btn").addEventListener("click", () => {
+        window.location.href = "https://discord.gg/gFSgJf9n6d";
+      });
+
+      // Check Premium Status with enhanced animations
+      async function checkPremiumStatus(user) {
+        try {
+          const snap = await db
+            .collection("premium_keys")
+            .where("assigned_to", "==", user.email)
+            .get();
+
+          if (!snap.empty) {
+            const data = snap.docs[0].data();
+            currentSid = data.sid || null;
+            redeemedKey = snap.docs[0].id || null;
+
+            // Update UI for premium user with animations
+            const premiumBadge = document.getElementById("premium-badge");
+            premiumBadge.style.display = "block";
+            premiumBadge.style.animation = "fadeIn 0.5s ease-out";
+
+            document.getElementById("redeemed-key").textContent =
+              redeemedKey || "Not Available";
+            document.getElementById("redeemed-key").style.animation =
+              "fadeIn 0.5s ease-out";
+
+            document.getElementById("current-sid").textContent =
+              currentSid || "Not Set";
+            document.getElementById("current-sid").style.animation =
+              "fadeIn 0.5s ease-out";
+
+            const resetCooldown = data.reset_cooldown
+              ? new Date(data.reset_cooldown.seconds * 1000)
+              : null;
+            document.getElementById("reset-time").textContent = resetCooldown
+              ? `${resetCooldown.toDateString()}`
+              : "Not Available";
+            document.getElementById("reset-time").style.animation =
+              "fadeIn 0.5s ease-out";
+
+            const canReset =
+              !resetCooldown ||
+              Date.now() - resetCooldown.getTime() > 1 * 24 * 60 * 60 * 1000;
+            const updateSidSection =
+              document.getElementById("update-sid-section");
+
+            if (canReset) {
+              updateSidSection.style.display = "block";
+              updateSidSection.style.animation = "fadeInUp 0.5s ease-out";
+            } else {
+              updateSidSection.style.display = "none";
+            }
+
+            // Show premium tab, hide redeem tab with animations
+            document.getElementById("premium-tab").disabled = false;
+            document.getElementById("redeem-tab").disabled = true;
+            document.getElementById("premium-tab").click();
+
+            // Add animation to premium badge
+            const badge = document.querySelector(".badge");
+            badge.classList.add("animate-pulse");
+            badge.style.animation = "pulseBadge 2s infinite alternate";
+          } else {
+            // Update UI for non-premium user
+            document.getElementById("premium-badge").style.display = "none";
+
+            // Show redeem tab, hide premium tab
+            document.getElementById("premium-tab").disabled = true;
+            document.getElementById("redeem-tab").disabled = false;
+            document.getElementById("redeem-tab").click();
+          }
+        } catch (error) {
+          showToast("Error checking premium status", "error");
+          console.error("Error checking premium status:", error);
+        }
+      }
+
+      // Auth state change listener with enhanced animations
+      auth.onAuthStateChanged(async (user) => {
+        currentUser = user;
+
+        if (user) {
+          // User is signed in
+          const authCard = document.getElementById("auth-card");
+          const userCard = document.getElementById("user-card");
+
+          // Fade out auth card
+          authCard.style.opacity = "0";
+          authCard.style.transform = "translateY(-20px)";
+
+          setTimeout(() => {
+            authCard.style.display = "none";
+            userCard.style.display = "block";
+
+            // Fade in user card
+            setTimeout(() => {
+              userCard.style.opacity = "1";
+              userCard.style.transform = "translateY(0)";
+              userCard.style.animation = "fadeSlideIn 0.5s ease-out";
+            }, 50);
+
+            document.getElementById("user-email").textContent = user.email;
+          }, 300);
+
+          await checkPremiumStatus(user);
+        } else {
+          // User is signed out
+          const authCard = document.getElementById("auth-card");
+          const userCard = document.getElementById("user-card");
+
+          // Fade out user card
+          if (userCard.style.display !== "none") {
+            userCard.style.opacity = "0";
+            userCard.style.transform = "translateY(-20px)";
+
+            setTimeout(() => {
+              userCard.style.display = "none";
+              authCard.style.display = "block";
+
+              // Fade in auth card
+              setTimeout(() => {
+                authCard.style.opacity = "1";
+                authCard.style.transform = "translateY(0)";
+                authCard.style.animation = "fadeSlideIn 0.5s ease-out";
+              }, 50);
+            }, 300);
+          } else {
+            authCard.style.display = "block";
+            authCard.style.animation = "fadeSlideIn 0.5s ease-out";
+          }
+        }
+      });
+
+      // Create falling particles animation
+      function createFallingParticles() {
+        const container = document.getElementById("falling-particles");
+        const cardWidth = document.getElementById("main-card").offsetWidth;
+
+        // Clear existing particles
+        container.innerHTML = "";
+
+        // Create new particles
+        for (let i = 0; i < 20; i++) {
+          const particle = document.createElement("div");
+          particle.className = "particle";
+
+          // Random horizontal position
+          particle.style.left = `${Math.random() * cardWidth}px`;
+
+          // Random size
+          const size = 2 + Math.random() * 4;
+          particle.style.width = `${size}px`;
+          particle.style.height = `${size}px`;
+
+          // Random animation duration and delay
+          const duration = 2 + Math.random() * 3;
+          particle.style.animationDuration = `${duration}s`;
+          particle.style.animationDelay = `${Math.random() * 3}s`;
+
+          container.appendChild(particle);
+        }
+      }
+
+      // Initialize falling particles and update on window resize
+      createFallingParticles();
+      window.addEventListener("resize", createFallingParticles);
+    </script>
+  </body>
+</html>
